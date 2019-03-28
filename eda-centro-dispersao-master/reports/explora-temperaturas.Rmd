@@ -1,0 +1,103 @@
+---
+title: "Temperatura JP x CG"
+output:
+    html_document:
+    df_print: paged
+theme: sandstone
+---
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+library(tidyverse)
+library(here)
+library(lubridate)
+library(ggbeeswarm)
+theme_set(theme_bw())
+```
+
+```{r read}
+climas = read_csv(here::here("data/clima_cg_jp-semanal.csv"), 
+                  col_types = "cTddddcd")
+
+glimpse(climas)
+```
+
+## Temperatura
+
+### Onde é mais quente?
+```{r}
+climas %>%
+    ggplot(aes(x = cidade, y = tmedia, color = cidade)) +
+    geom_boxplot()
+```
+
+### As temperaturas máximas semanais (o pico do calor) são tão diferentes quanto as médias? Mais?  
+
+```{r}
+climas %>%
+    filter(cidade == "Campina Grande") %>%
+    ggplot() +
+    geom_line(aes(x = semana, y = tmedia, color = )) +
+    geom_line((aes(x = semana, y = tmax, color = tmax)))+
+    labs(
+        title = "Campina Grande"
+    )
+
+climas %>%
+    filter(cidade == "João Pessoa") %>%
+    ggplot() +
+    geom_line(aes(x = semana, y = tmedia, color = )) +
+    geom_line((aes(x = semana, y = tmax, color = tmax))) +
+    labs(
+        title = "João Pessoa"
+    )
+    
+
+
+```
+
+### Quais os meses mais quentes e mais frios? 
+
+```{r}
+climas %>%
+    #filter(cidade == "Campina Grande") %>%
+    ggplot()+
+    geom_jitter(aes(x = mes, y = tmedia, color = mes))+
+    labs(
+        title = "Meses mais frios"
+    )
+
+```
+
+### Qual foi o São João  mais frio de CG que está nos nossos dados?
+```{r}
+climas %>%
+    filter(cidade == "Campina Grande", mes == "6") %>%
+    ggplot()+
+    #geom_point(aes(x = ano, y = tmedia, color = tmedia))+
+    geom_line(aes(x = ano, y = tmedia, color = tmedia))
+```
+
+
+
+## Chuva
+
+### Quanto chove por semana em JP e CG?
+
+Como é a distribuição do volume de chuvas por semana em JP e CG? A chuva varia mais ou menos que a temperatura? O formato da distribuição é igual? 
+
+### No geral, onde chove mais?
+
+```{r}
+climas %>%
+    ggplot(aes(x = cidade, y = chuva, color = cidade)) +
+    geom_boxplot(width = .3, outlier.colour = NA, coef = 1000)
+```
+
+
+### A distribuição é diferente em meses específicos? 
+```{r}
+climas %>%
+    ggplot(aes(x = mes, y = cidade, color = cidade)) +
+    geom_count()
+```
+

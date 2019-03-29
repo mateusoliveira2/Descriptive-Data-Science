@@ -27,29 +27,21 @@ glimpse(climas)
 ```{r}
 climas %>%
     ggplot(aes(x = cidade, y = tmedia, color = cidade)) +
-    geom_boxplot()
+    geom_quasirandom(alpha = 0.3)
 ```
 
 ### As temperaturas máximas semanais (o pico do calor) são tão diferentes quanto as médias? Mais?  
 
 ```{r}
 climas %>%
-    filter(cidade == "Campina Grande") %>%
-    ggplot() +
-    geom_line(aes(x = semana, y = tmedia, color = )) +
-    geom_line((aes(x = semana, y = tmax, color = tmax)))+
+    ggplot(aes(x = cidade , y = tmax, color = cidade)) +
+    geom_quasirandom(alpha = 0.3)
+    
     labs(
-        title = "Campina Grande"
+        title = "Temperaturas maximas de Campina Grande e João Pessoa"
     )
 
-climas %>%
-    filter(cidade == "João Pessoa") %>%
-    ggplot() +
-    geom_line(aes(x = semana, y = tmedia, color = )) +
-    geom_line((aes(x = semana, y = tmax, color = tmax))) +
-    labs(
-        title = "João Pessoa"
-    )
+
     
 
 
@@ -59,9 +51,9 @@ climas %>%
 
 ```{r}
 climas %>%
-    #filter(cidade == "Campina Grande") %>%
-    ggplot()+
-    geom_jitter(aes(x = mes, y = tmedia, color = mes))+
+    ggplot(aes(x = mes, y = tmedia, color = mes))+
+    geom_jitter( alpha = 0.4)+
+    #scale_x_continuous(breaks = 1:12)+
     labs(
         title = "Meses mais frios"
     )
@@ -72,9 +64,11 @@ climas %>%
 ```{r}
 climas %>%
     filter(cidade == "Campina Grande", mes == "6") %>%
+    group_by(ano) %>%
+    summarise(tsaojoao = mean(tmedia))%>%
     ggplot()+
-    #geom_point(aes(x = ano, y = tmedia, color = tmedia))+
-    geom_line(aes(x = ano, y = tmedia, color = tmedia))
+    geom_point(aes(x = ano, y = tsaojoao))+
+    geom_line(aes(x = ano, y = tsaojoao))
 ```
 
 
@@ -82,6 +76,17 @@ climas %>%
 ## Chuva
 
 ### Quanto chove por semana em JP e CG?
+```{r}
+climas %>%
+    filter(ano == 2012) %>%
+    ggplot(aes(x = semana, y = chuva, color = cidade)) +
+    geom_line()+
+    facet_grid(~cidade)+
+    labs(
+        tittle = "Semanas que mais choveram em 2012"
+    )
+
+```
 
 Como é a distribuição do volume de chuvas por semana em JP e CG? A chuva varia mais ou menos que a temperatura? O formato da distribuição é igual? 
 
@@ -97,7 +102,8 @@ climas %>%
 ### A distribuição é diferente em meses específicos? 
 ```{r}
 climas %>%
-    ggplot(aes(x = mes, y = cidade, color = cidade)) +
-    geom_count()
+    ggplot(aes(x = mes, y = chuva, color = cidade)) +
+    geom_line()+
+    facet_grid(~cidade)
 ```
 

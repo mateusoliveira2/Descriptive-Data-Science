@@ -1,0 +1,102 @@
+---
+title: "EDA Atypical"
+output:
+  html_notebook:
+    toc: yes
+    toc_float: yes
+  html_document:
+    df_print: paged
+    toc: yes
+    toc_float: yes
+---
+
+```{r setup, echo=FALSE, warning=FALSE, message=FALSE}
+library(tidyverse)
+library(here)
+theme_set(theme_bw())
+```
+
+## Objetivo
+
+Explorar as avaliações dos episódios da série Atypical. Houve duas temporadas: quais foram os melhores episódios? A melhor temporada?
+
+Ler os dados:
+
+```{r}
+all_series = read_csv(here("data/series_from_imdb.csv.zip"), 
+                      col_types = "ccdcdcdddddddddddd") 
+
+glimpse(all_series)
+
+episodes = all_series %>% 
+    filter(series_name == "Atypical") 
+
+glimpse(episodes)
+```
+
+Estamos interessados nas variáveis `UserRating` e `UserVotes`, principalmente.
+
+## Quais os valores que existem de notas? 
+
+```{r}
+episodes %>% 
+  mutate(season = as.character(season)) %>% 
+  ggplot(mapping = aes(x = season, y = UserRating)) + 
+  geom_point()
+  
+```
+
+E por faixas de valor?
+
+```{r}
+episodes %>% 
+  mutate(season = as.character(season)) %>% 
+  ggplot(mapping = aes(x = UserRating)) + 
+  geom_histogram(binwidth = 0.5, 
+                 boundary = 6,
+                 color = "black", 
+                 fill = "salmon") + 
+  geom_rug()
+
+```
+
+## Quais valores existem para número de votos?
+
+```{r}
+episodes %>% 
+  mutate(season = as.character(season)) %>% 
+  ggplot(mapping = aes(x = season, y = UserVotes)) + 
+  geom_point()
+```
+
+```{r}
+episodes %>% 
+  mutate(season = as.character(season)) %>% 
+  ggplot(mapping = aes(x = UserVotes)) + 
+  geom_density() + 
+  geom_rug()
+```
+
+Temos um episódio bem mais avaliado que os demais.
+
+
+## Qual é esse episódio tão mal avaliado?
+
+```{r}
+episodes %>% 
+  mutate(season = as.character(season)) %>% 
+  ggplot(mapping = aes(x = series_ep, y = UserRating, color = season)) + 
+  geom_line()+
+    geom_point()
+```
+
+E qual aquele com mais avaliações?
+
+```{r}
+episodes %>% 
+  mutate(season = as.character(season)) %>% 
+  ggplot(mapping = aes(x = series_ep, y = UserVotes, color = season)) + 
+  geom_line()
+```
+
+Alguma coisa aconteceu no episódio 15...

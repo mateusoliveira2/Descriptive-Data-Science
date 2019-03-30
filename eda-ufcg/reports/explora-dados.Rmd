@@ -1,0 +1,38 @@
+---
+title: "Ultilizando dados da UFCG para analise dados"
+output:
+    html_document:
+    df_print: paged
+theme: sandstone
+---
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+library(tidyverse)
+library(here)
+library(lubridate)
+library(ggbeeswarm)
+theme_set(theme_bw())
+```
+
+```{r read}
+resultado = read_csv(here::here("data/taxaReprovacaoAnoPorCurso.csv"), 
+                  col_types = "cddcddc")
+
+glimpse(resultado)
+```
+
+## Reprovacoes
+
+### Proporção de reprovados 
+```{r}
+resultado %>%
+  filter(Curso == "14123100 - ENGENHARIA ELÉTRICA" | Curso == "14102100 - CIÊNCIA DA COMPUTAÇÃO - D" | Curso == "15122100 - ENGENHARIA CIVIL - D")%>%
+  group_by(Curso) %>%
+  summarise(proporcao = (sum(Reprovacoes1+Reprovacoes2) / sum(Matriculas1 + Matriculas2) * 100)) %>%
+  
+  ggplot(aes(x = Curso, y = proporcao, fill = Curso, color = Curso)) +
+  geom_col(alpha = 0.3)
+  
+
+```
+

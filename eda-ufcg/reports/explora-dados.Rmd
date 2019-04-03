@@ -25,7 +25,11 @@ glimpse(resultado)
 
 ### Proporção de reprovados 
 ```{r}
+#teste para transformar df em lista
+lista = split(resultado, seq(nrow(resultado)))
+
 resultado %>%
+  
   filter(Curso == "14123100 - ENGENHARIA ELÉTRICA" | Curso == "14102100 - CIÊNCIA DA COMPUTAÇÃO - D" | Curso == "15122100 - ENGENHARIA CIVIL - D")%>%
   group_by(Curso) %>%
   summarise(proporcao = (sum(Reprovacoes1+Reprovacoes2) / sum(Matriculas1 + Matriculas2) * 100)) %>%

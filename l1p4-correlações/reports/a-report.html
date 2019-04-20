@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+
+<meta name="author" content="Mateus de Lima Oliveira" />
+
+
+<title>Parlamentares no Twitter: Analises de correlações</title>
+
+<script src="a-report_files/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="a-report_files/bootstrap-3.3.5/css/flatly.min.css" rel="stylesheet" />
+<script src="a-report_files/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="a-report_files/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="a-report_files/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="a-report_files/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="a-report_files/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="a-report_files/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="a-report_files/navigation-1.1/tabsets.js"></script>
+<link href="a-report_files/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="a-report_files/highlightjs-9.12.0/highlight.js"></script>
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+<link rel="stylesheet" href="r-markdown.css" type="text/css" />
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+  height: auto;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+</style>
+
+
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3,h4,h5",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = false;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+  padding-left: 25px;
+  text-indent: 0;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+.tocify-subheader {
+  display: inline;
+}
+.tocify-subheader .tocify-item {
+  font-size: 0.95em;
+}
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row-fluid">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">Parlamentares no Twitter: Analises de correlações</h1>
+<h4 class="author">Mateus de Lima Oliveira</h4>
+<h4 class="date">20 de abril de 2019</h4>
+
+</div>
+
+
+<p>Como visto em analises anteriores, a utilização do Twitter por parte dos parlamentares segue algumas caracteristicas de acordo com certas diretrizes. Como por exemplo, quais são os partidos mais ativos, ou qual casa que tem maioria dos parlamentares na rede social.</p>
+<p>Todas essas analises foram feitas com base em “classificações”, com base em certa caracteristicas. Agora, vamos nos deter a fazer observações com foco mais em associações e correlações entre valores do mesmo dataset que não sejam qualitativos, e sim quantitativos.</p>
+<pre class="r"><code>glimpse(atividade)</code></pre>
+<pre><code>## Observations: 608
+## Variables: 19
+## $ id_parlamentar        &lt;chr&gt; &quot;204554&quot;, &quot;204521&quot;, &quot;204379&quot;, &quot;204560&quot;, ...
+## $ casa                  &lt;chr&gt; &quot;câmara&quot;, &quot;câmara&quot;, &quot;câmara&quot;, &quot;câmara&quot;, ...
+## $ nome_eleitoral        &lt;chr&gt; &quot;ABÍLIO SANTANA&quot;, &quot;ABOU ANNI&quot;, &quot;ACÁCIO F...
+## $ partido               &lt;chr&gt; &quot;PR&quot;, &quot;PSL&quot;, &quot;PROS&quot;, &quot;PSDB&quot;, &quot;NOVO&quot;, &quot;PP...
+## $ UF                    &lt;chr&gt; &quot;BA&quot;, &quot;SP&quot;, &quot;AP&quot;, &quot;BA&quot;, &quot;SP&quot;, &quot;GO&quot;, &quot;MG&quot;...
+## $ twitter               &lt;chr&gt; &quot;AbilioSantana_&quot;, &quot;abouannipv&quot;, &quot;Favacho...
+## $ seguidores            &lt;dbl&gt; NA, NA, NA, NA, 4652, NA, NA, NA, NA, NA...
+## $ segue                 &lt;dbl&gt; NA, NA, NA, NA, 315, NA, NA, NA, NA, NA,...
+## $ n_proprio             &lt;dbl&gt; 0, 0, 0, 0, 99, 0, 0, 0, 0, 0, 0, 0, NA,...
+## $ n_retweet             &lt;dbl&gt; 0, 0, 0, 0, 9, 0, 0, 0, 0, 0, 0, 0, NA, ...
+## $ engaj_total           &lt;dbl&gt; 0, 0, 0, 0, 7090, 0, 0, 0, 0, 0, 0, 0, N...
+## $ engaj_total_proprio   &lt;dbl&gt; 0, 0, 0, 0, 6701, 0, 0, 0, 0, 0, 0, 0, N...
+## $ engaj_total_retweet   &lt;dbl&gt; 0, 0, 0, 0, 389, 0, 0, 0, 0, 0, 0, 0, NA...
+## $ engaj_mediano         &lt;dbl&gt; 0.0, 0.0, 0.0, 0.0, 26.5, 0.0, 0.0, 0.0,...
+## $ engaj_mediano_proprio &lt;dbl&gt; 0.0, 0.0, 0.0, 0.0, 22.5, 0.0, 0.0, 0.0,...
+## $ engaj_mediano_retweet &lt;dbl&gt; 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, ...
+## $ engaj_max             &lt;dbl&gt; 0, 0, 0, 0, 1031, 0, 0, 0, 0, 0, 0, 0, N...
+## $ engaj_max_proprio     &lt;dbl&gt; 0, 0, 0, 0, 1031, 0, 0, 0, 0, 0, 0, 0, N...
+## $ engaj_max_retweet     &lt;dbl&gt; 0, 0, 0, 0, 99, 0, 0, 0, 0, 0, 0, 0, NA,...</code></pre>
+<div id="analises" class="section level2">
+<h2>Análises</h2>
+<div id="relacao-entre-numero-de-seguidores-e-de-twittes" class="section level3">
+<h3>1 - Relação entre número de seguidores e de twittes</h3>
+<p>Para analisar como segue a relação de <em>número seguidores X twittes</em>, os valores estão dispostos no grafico com ambas as variaveis em log10 para que a visualização fique mais clara de ser vista. Foi utilizada a diferença de cores com base na casa para que se possa ver se o resultado analisado é o mesmo tanto para os parlamentares do senado quando da câmara.</p>
+<pre class="r"><code>parlamentares_ativos &lt;- atividade %&gt;% filter(!is.na(twitter))
+media &lt;- parlamentares_ativos%&gt;% mean(seguidores)
+parlamentares_ativos %&gt;%
+  ggplot(aes(x = n_proprio, y = seguidores, color = casa)) +
+  geom_point()+
+  scale_y_log10() +
+  scale_x_log10() +
+  
+  
+  labs(
+    title = &quot;Relação entre número de seguidores e de twittes&quot;,
+    subtitle = &quot;Escalas em log10&quot;,
+    x = &quot;Número de twittes proprios&quot;,
+    y = &quot;Seguidores&quot;
+  )</code></pre>
+<p><img src="a-report_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
+<p>Conforme visto no gráfico, apesar de um pouco diversos, da para perceber que há uma tendencia de quanto maior o numero de twittes feitos pelos parlamentares, maior o número de seguidores também. Tanto para os senadores, quanto para os deputados, a tendencia é a mesma. Observa-se alguns pontos que destoam da maioria, como um senador que tem tem poucos twittes e muitos seguidores, ou o deputado com maior numero de twittes, que não tem um número de seguidores entre os mais altos.</p>
+</div>
+<div id="entre-o-pt-e-o-psl-os-parlamentares-que-tem-mais-seguidores-seguem-mais" class="section level3">
+<h3>2 - Entre o PT e o PSL, os parlamentares que tem mais seguidores, seguem mais?</h3>
+<p>No meio online existe o termo <em>SDV</em>, que quer dizer “Sigo de Volta”. Este termo é usado por usuarios, normalmente no twitter, que seguem todas as contas que o seguirem e assim atraem mais gente que querem seguidores também. Para analisar se utilizam dessa estrategia para conseguir seguidores, e consequentemente popularidade, vai ser utilizada a <em>diferença</em> entre <em>seguidores</em> e pessoas que o parlamentar <em>segue</em>. Para facilitar a visualização, vamos usar apenas os parlamentares dos partidos mais populares: PT e PSL.</p>
+<pre class="r"><code>parlamentares_ativos %&gt;%
+  filter(!is.na(seguidores) &amp; (partido == &quot;PSL&quot; | partido == &quot;PT&quot;)) %&gt;%
+  mutate(diferenca = seguidores-segue)%&gt;%
+  ggplot(aes(x = seguidores, y = diferenca,  show.legend = FALSE))+
+  geom_point(alpha = 0.4)+
+  scale_y_continuous(trans = &quot;log10&quot;)+
+  scale_x_continuous(trans = &quot;log10&quot;)+
+  
+  labs(
+    title = &quot;Existem parlamentares SDV?&quot;,
+    subtitle = &quot;Escalas em log10&quot;,
+    x = &quot;Seguidores&quot;,
+    y = &quot;Diferença&quot;
+  )</code></pre>
+<p><img src="a-report_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+<p>Pode analisar que há uma correlação bastante forte, onde ao passo que a quantidade se seguidores cresce, a diferença também cresce em mesma quantidade. Isso quer dizer que os parlamentares, em sua grande maioria, não está seguindo seus seguidores de volta como forma de acordo feitos pelos <em>SDV’s</em>.</p>
+</div>
+<div id="relacao-seguidores-x-seguindo" class="section level3">
+<h3>2.1 - Relação Seguidores X Seguindo?</h3>
+<p>Para reforçar as conclusoes da visualização anterior, vamos verificar agora a relação entre número de contas seguidas e de seguidores pelos parlamentares do PT e PSL.</p>
+<pre class="r"><code>parlamentares_ativos %&gt;%
+  filter(!is.na(seguidores) &amp; (partido == &quot;PSL&quot; | partido == &quot;PT&quot;)) %&gt;%
+  mutate(diferenca = seguidores-segue)%&gt;%
+  
+  ggplot(aes(x = segue, y = seguidores, show.legend = FALSE))+
+  geom_point(color = &quot;blue&quot;, alpha = 0.4)+
+  geom_rug(alpha = .7, color = &quot;#2F4858&quot;, sides = &quot;l&quot;)+
+  scale_y_continuous(trans = &quot;sqrt&quot;)+
+  scale_x_continuous(trans = &quot;sqrt&quot;)+
+  
+  labs(
+    title = &quot;Relação entre número de contas seguidas e de seguidores&quot;,
+    subtitle = &quot;Escalas em sqrt&quot;,
+    x = &quot;Seguindo&quot;,
+    y = &quot;Seguidores&quot;
+  )</code></pre>
+<p><img src="a-report_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+<p>Pode-se verificar que que o número de contas seguidas é bem baixo comparado ao de seguidores. Algo previsto, pois de acordo com o gráfico anterior a diferença aumenta de acordo com os seguidores. Assim, os parlamentares não estão seguindo os seguidores de volta.</p>
+</div>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

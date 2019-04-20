@@ -1,0 +1,121 @@
+---
+title: "Parlamentares no Twitter: Analises de correlações"
+author: "Mateus de Lima Oliveira"
+date: "20 de abril de 2019"
+output:
+  html_document:
+    theme: flatly
+    self_contained: no
+    toc: yes
+    toc_depth: 5
+    toc_float:
+      collapsed: no
+  pdf_document:
+    toc: yes
+    toc_depth: '5'
+css: r-markdown.css
+---
+
+Como visto em analises anteriores, a utilização do Twitter por parte dos parlamentares segue algumas caracteristicas de acordo com certas diretrizes. Como por exemplo, quais são os partidos mais ativos, ou qual casa que tem maioria dos parlamentares na rede social. 
+
+Todas essas analises foram feitas com base em "classificações",  com base em certa caracteristicas. Agora, vamos nos deter a fazer observações com foco mais em associações e correlações entre valores do mesmo dataset que não sejam qualitativos, e sim quantitativos.
+
+
+```{r warning = FALSE, message = FALSE, error = FALSE, echo = FALSE}
+library(tidyverse)
+library(ggbeeswarm)
+library(ggplot2)
+library(plotly)
+source(here::here('code/lib.R'))
+options(scipen = 999)
+theme_set(theme_bw())
+```
+
+```{r read, warning = FALSE, message = FALSE, error = FALSE, echo = FALSE}
+atividade = read_projectdata()
+```
+
+```{r warning = FALSE, message = FALSE, error = FALSE}
+glimpse(atividade)
+```
+
+## Análises
+
+### 1 - Relação entre número de seguidores e de twittes
+
+Para analisar como segue a relação de *número seguidores X twittes*, os valores estão dispostos no grafico com ambas as variaveis em log10 para que a visualização fique mais clara de ser vista. Foi utilizada a diferença de cores com base na casa para que se possa ver se o resultado analisado é o mesmo tanto para os parlamentares do senado quando da câmara. 
+
+```{r warning = FALSE, message = FALSE, error = FALSE}
+parlamentares_ativos <- atividade %>% filter(!is.na(twitter))
+media <- parlamentares_ativos%>% mean(seguidores)
+parlamentares_ativos %>%
+  ggplot(aes(x = n_proprio, y = seguidores, color = casa)) +
+  geom_point()+
+  scale_y_log10() +
+  scale_x_log10() +
+  
+  
+  labs(
+    title = "Relação entre número de seguidores e de twittes",
+    subtitle = "Escalas em log10",
+    x = "Número de twittes proprios",
+    y = "Seguidores"
+  )
+
+
+```
+
+
+Conforme visto no gráfico, apesar de um pouco diversos, da para perceber que há uma tendencia de quanto maior o numero de twittes feitos pelos parlamentares, maior o número de seguidores também. Tanto para os senadores, quanto para os deputados, a tendencia é a mesma. Observa-se alguns pontos que destoam da maioria, como um senador que tem tem poucos twittes e muitos seguidores, ou o deputado com maior numero de twittes, que não tem um número de seguidores entre os mais altos.
+
+### 2 - Entre o PT e o PSL, os parlamentares que tem mais seguidores, seguem mais?
+
+No meio online existe o termo *SDV*, que quer dizer "Sigo de Volta". Este termo é usado por usuarios, normalmente no twitter, que seguem todas as contas que o seguirem e assim atraem mais gente que querem seguidores também.
+Para analisar se utilizam dessa estrategia para conseguir seguidores, e consequentemente popularidade, vai ser utilizada a *diferença* entre *seguidores* e pessoas que o parlamentar *segue*. 
+Para facilitar a visualização, vamos usar apenas os parlamentares dos partidos mais populares: PT e PSL. 
+
+```{r message=TRUE, warning=FALSE, paged.print=FALSE}
+parlamentares_ativos %>%
+  filter(!is.na(seguidores) & (partido == "PSL" | partido == "PT")) %>%
+  mutate(diferenca = seguidores-segue)%>%
+  ggplot(aes(x = seguidores, y = diferenca,  show.legend = FALSE))+
+  geom_point(alpha = 0.4)+
+  scale_y_continuous(trans = "log10")+
+  scale_x_continuous(trans = "log10")+
+  
+  labs(
+    title = "Existem parlamentares SDV?",
+    subtitle = "Escalas em log10",
+    x = "Seguidores",
+    y = "Diferença"
+  )
+
+```
+
+Pode analisar que há uma correlação bastante forte, onde ao passo que a quantidade se seguidores cresce, a diferença também cresce em mesma quantidade. Isso quer dizer que os parlamentares, em sua grande maioria, não está seguindo seus seguidores de volta como forma de acordo feitos pelos *SDV's*.
+
+### 2.1 - Relação Seguidores X Seguindo?
+
+Para reforçar as conclusoes da visualização anterior, vamos verificar agora a relação entre número de contas seguidas e de seguidores pelos parlamentares do PT e PSL.
+
+```{r message=TRUE, warning=TRUE, paged.print=FALSE}
+parlamentares_ativos %>%
+  filter(!is.na(seguidores) & (partido == "PSL" | partido == "PT")) %>%
+  mutate(diferenca = seguidores-segue)%>%
+  
+  ggplot(aes(x = segue, y = seguidores, show.legend = FALSE))+
+  geom_point(color = "blue", alpha = 0.4)+
+  geom_rug(alpha = .7, color = "#2F4858", sides = "l")+
+  scale_y_continuous(trans = "sqrt")+
+  scale_x_continuous(trans = "sqrt")+
+  
+  labs(
+    title = "Relação entre número de contas seguidas e de seguidores",
+    subtitle = "Escalas em sqrt",
+    x = "Seguindo",
+    y = "Seguidores"
+  )
+
+```
+
+Pode-se verificar que que o número de contas seguidas é bem baixo comparado ao de seguidores. Algo previsto, pois de acordo com o gráfico anterior a diferença aumenta de acordo com os seguidores. Assim, os parlamentares não estão seguindo os seguidores de volta. 

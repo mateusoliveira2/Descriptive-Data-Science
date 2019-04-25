@@ -1,0 +1,179 @@
+---
+title: "Comentários e cultura"
+output:
+    html_document:
+    df_print: paged
+theme: sandstone
+---
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+library(tidyverse)
+library(here)
+library(viridis)
+theme_set(theme_bw())
+
+knitr::opts_chunk$set(tidy = FALSE,
+                      fig.width = 6,
+                      fig.height = 5)
+```
+
+```{r read}
+dados = read_csv(
+    here::here("data/participation-per-country.csv"),
+    col_types = cols(
+        .default = col_double(),
+        site = col_character(),
+        country = col_character(),
+        geo = col_character(),
+        four_regions = col_character(),
+        eight_regions = col_character(),
+        six_regions = col_character(),
+        `World bank income group 2017` = col_character()
+    )
+) %>% 
+    filter(usuarios > 200)
+glimpse(dados)
+```
+
+Estamos interessados na relação entre quanto as pessoas de diferentes países comentam em questões dos outros. A proporção das pessoas do país que comentou nas questões de outros está medido na variável `comentaram_prop`. 
+
+Considerando essa variável, queremos examinar a relação entre ela e o quão hierárquicas são as relações em um país (`PDI`). Queremos também levar em conta o quanto as pessoas daquele país têm acesso à Internet (`Internet`) e qual o tamanho da base de dados que detectamos daquele país (`usuarios`). 
+
+## Examinando essa relação
+
+Faça uma visualização que usa os princípios de eficácia no projeto de visualizações para facilitar as comparações que você acha que são as mais importantes para entendermos esse contexto. 
+
+```{r}
+dados %>%
+    ggplot(aes(x = PDI, y = responderam_prop, size = usuarios))+
+    geom_point(alpha = 0.4, show.legend = FALSE)+
+    facet_grid(~ site, scales = "free_y")+
+    
+    labs(
+        title = "Relação entre PDI e respostas proporcionais",
+        subtitle = "PDI é o quão hierárquica é a sociedade",
+        x = "PDI",
+        y = "Respostas"
+    )
+
+```
+
+
+## Outras formas de ver
+
+Em seguida, faça 5 visualizações que usem as mesmas variáveis e também pontos, mas que sejam **menos eficazes** que a que você escolheu acima. 
+
+### 1
+
+```{r}
+dados %>%
+    ggplot(aes(x = PDI, y = responderam_prop, color = usuarios))+
+    geom_point(alpha = 0.4, show.legend = FALSE)+
+    
+    labs(
+        x = "PDI",
+        y = "Respostas"
+    )
+
+```
+
+### 2
+
+```{r}
+amostraSuper = dados %>%
+            filter(site == "SuperUser")%>%
+            sample_n(40)
+
+amostraSuper %>%
+    ggplot(aes(x = PDI , y = "",  size = responderam_prop) )+
+    geom_jitter(alpha = 0.5) +
+    
+    labs(
+        x = "PDI",
+        y = ""
+    )
+
+```
+
+
+### 3
+
+```{r}
+
+amostra = dados %>%
+            sample_n(50)
+
+amostra %>%
+    ggplot(aes(x = PDI , y = responderam_prop, size = usuarios, color = responderam_prop))+
+    geom_jitter(alpha = 0.8) +
+    
+    labs(
+        x = "PDI",
+        y = "RESPOSTAS"
+    )
+
+```
+
+### 4
+
+
+```{r}
+
+amostra = dados %>%
+            filter(site == "StackOverflow")%>%
+            sample_n(30)
+
+amostra %>%
+    ggplot(aes(x = PDI, y = responderam_prop))+
+    geom_line( show.legend = FALSE)+
+    geom_point()+
+   
+    
+    labs(
+        x = "PDI",
+        y = "RESPOSTAS"
+    )
+
+```
+
+
+
+### 5
+
+```{r}
+
+amostra = dados %>%
+            filter(site == "StackOverflow")%>%
+            sample_n(20)
+
+amostra %>%
+    ggplot(aes(x = reorder(country, PDI) , y = PDI , size = responderam_prop))+
+    geom_point(alpha = 0.6)+
+    coord_flip()+
+    
+    labs(
+        x = "",
+        y = "PDI"
+    )
+
+```
+
+## Bônus
+
+Inclua o continente dos países (`six_regions`) na visualização.
+
+```{r}
+dados %>%
+    ggplot(aes(x = PDI, y = responderam_prop, color = six_regions, size = usuarios))+
+    geom_point(alpha = 0.4)+
+    facet_grid(~ site, scales = "free_y")+
+    
+    labs(
+        title = "Relação entre PDI e respostas proporcionais",
+        subtitle = "PDI é o quão hierárquica é a sociedade",
+        x = "PDI",
+        y = "Respostas"
+    )
+
+```
+

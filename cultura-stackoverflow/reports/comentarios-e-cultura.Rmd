@@ -45,9 +45,9 @@ Faça uma visualização que usa os princípios de eficácia no projeto de visua
 
 ```{r}
 dados %>%
-    ggplot(aes(x = PDI, y = responderam_prop, size = usuarios))+
-    geom_point(alpha = 0.4, show.legend = FALSE)+
-    facet_grid(~ site, scales = "free_y")+
+    ggplot(aes(x = PDI, y = comentaram_prop,color = Internet, size = usuarios))+
+    geom_point(alpha = 0.4)+
+    facet_grid(~ site)+
     
     labs(
         title = "Relação entre PDI e respostas proporcionais",
@@ -65,9 +65,9 @@ Em seguida, faça 5 visualizações que usem as mesmas variáveis e também pont
 
 ### 1
 
-```{r}
+```{r warning=FALSE}
 dados %>%
-    ggplot(aes(x = PDI, y = responderam_prop, color = usuarios))+
+    ggplot(aes(x = PDI, y = comentaram_prop, size = Internet, color = usuarios))+
     geom_point(alpha = 0.4, show.legend = FALSE)+
     
     labs(
@@ -79,18 +79,18 @@ dados %>%
 
 ### 2
 
-```{r}
+```{r warning=FALSE}
 amostraSuper = dados %>%
             filter(site == "SuperUser")%>%
             sample_n(40)
 
 amostraSuper %>%
-    ggplot(aes(x = PDI , y = "",  size = responderam_prop) )+
-    geom_jitter(alpha = 0.5) +
+    ggplot(aes(x = comentaram_prop , y = sqrt(Internet),  size = PDI, color = usuarios) )+
+    geom_point(alpha = 0.5) +
     
     labs(
-        x = "PDI",
-        y = ""
+        x = "COMENTARIOS",
+        y = "Internet (sqrt)"
     )
 
 ```
@@ -98,18 +98,18 @@ amostraSuper %>%
 
 ### 3
 
-```{r}
+```{r warning=FALSE}
 
 amostra = dados %>%
             sample_n(50)
 
 amostra %>%
-    ggplot(aes(x = PDI , y = responderam_prop, size = usuarios, color = responderam_prop))+
+    ggplot(aes(x = PDI , y = comentaram_prop, size = Internet, color = usuarios))+
     geom_jitter(alpha = 0.8) +
     
     labs(
         x = "PDI",
-        y = "RESPOSTAS"
+        y = "COMENTARIOS"
     )
 
 ```
@@ -121,12 +121,12 @@ amostra %>%
 
 amostra = dados %>%
             filter(site == "StackOverflow")%>%
-            sample_n(30)
+            sample_n(25)
 
 amostra %>%
-    ggplot(aes(x = PDI, y = responderam_prop))+
-    geom_line( show.legend = FALSE)+
-    geom_point()+
+    ggplot(aes(x = PDI, y = comentaram_prop))+
+    geom_line()+
+    geom_point(aes(size = usuarios, color = Internet))+
    
     
     labs(
@@ -147,7 +147,7 @@ amostra = dados %>%
             sample_n(20)
 
 amostra %>%
-    ggplot(aes(x = reorder(country, PDI) , y = PDI , size = responderam_prop))+
+    ggplot(aes(x = reorder(country, PDI) , y = PDI , color = usuarios, size = comentaram_prop))+
     geom_point(alpha = 0.6)+
     coord_flip()+
     
@@ -164,8 +164,8 @@ Inclua o continente dos países (`six_regions`) na visualização.
 
 ```{r}
 dados %>%
-    ggplot(aes(x = PDI, y = responderam_prop, color = six_regions, size = usuarios))+
-    geom_point(alpha = 0.4)+
+    ggplot(aes(x = PDI, y = comentaram_prop))+
+    geom_point(aes( color = six_regions, size = usuarios), alpha = 0.4)+
     facet_grid(~ site, scales = "free_y")+
     
     labs(

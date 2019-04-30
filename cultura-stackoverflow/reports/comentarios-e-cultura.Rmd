@@ -1,9 +1,19 @@
 ---
-title: "Comentários e cultura"
+title: "Analise cultura e comentarios no StackOverflow e SuperUser"
+author: "Mateus de Lima Oliveira"
+date: "30 de abril de 2019"
 output:
-    html_document:
-    df_print: paged
-theme: sandstone
+  html_document:
+    theme: flatly
+    self_contained: no
+    toc: yes
+    toc_depth: 5
+    toc_float:
+      collapsed: no
+  pdf_document:
+    toc: yes
+    toc_depth: '5'
+css: r-markdown.css
 ---
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
@@ -43,6 +53,9 @@ Considerando essa variável, queremos examinar a relação entre ela e o quão h
 
 Faça uma visualização que usa os princípios de eficácia no projeto de visualizações para facilitar as comparações que você acha que são as mais importantes para entendermos esse contexto. 
 
+
+Foram utilizados pontos para representar a relação entre a quantidade de respostas proporcionalmente, e o PDI (que representa o quão hierarquica é uma sociedade) em cada país. Com isso, da para ver mais facilmente como se encontra a relação das variaveis e quais são os paises que mais se destacam da tendencia. Cada ponto do país tem um tamanho e cor diferente para mostrar a quantidade de usuarios e o quanto internet é usada, proporcionalmente. 
+
 ```{r}
 dados %>%
     ggplot(aes(x = PDI, y = comentaram_prop,color = Internet, size = usuarios))+
@@ -57,6 +70,11 @@ dados %>%
     )
 
 ```
+
+
+
+
+Pode-se observar que há uma tendência de quanto maior o PDI, menor a quantidade de respostas proporcionais por país. Outro constatação interessante é observar que as cores dos pontos ficam mais escuras conforme as respostas caem e o PDI aumenta, sendo assim, a utilização da internet nesses lugares também é pequena, consequentemente afetando a quantidade de usuarios dos sites.
 
 
 ## Outras formas de ver

@@ -1,0 +1,79 @@
+---
+title: "Hathaway, de Genovia à Gotham."
+author: "Mateus de Lima Oliveira"
+date: "13 de maio de 2019"
+output:
+  html_document:
+    code_folding: "hide"
+    toc: yes
+    toc_depth: 5
+    toc_float:
+      collapsed: no
+    df_print: paged
+---
+
+**Viola Davis Tennon** é uma atriz e produtora norte-americana que tem sua carreira consagrada nos cinemas e na TV. A veterana começou sua carreira como atriz em peças de teatro e papeis coadjuvantes no cinema, tendo seus primeiros destaques em *Kate & Leopold*, em 2001, e *Far from Heaven*, no ano seguinte. Apesar de já começar a traçar sua icônica trajetoria nos cinemas, seu maior sucesso veio em 2008, no drama *Doubt*, que lhe rendeu diversas indicações, incluindo *Oscar*, *Globo de Ouro* e *SAG Award*, todos na categoria de Melhor Atriz Coadjuvante. Como Atriz Principal pelo filme *The Help*, em 2011, ela repetiu o feito, sendo indicada nas maiores premiações do cinema e ganhando um *SAG Award*.
+
+```{r warning = FALSE, message = FALSE, error = FALSE}
+library(tidyverse)
+library(cluster)
+library(ggpubr)
+library(plotly)
+library(broom)
+library(here)
+source(here::here("code/lib.R"))
+theme_set(theme_report())
+knitr::opts_chunk$set(tidy = FALSE, fig.width = 8, fig.height = 6, echo = TRUE)
+import_data("viola_davis")
+filmes = read_imported_data()
+```
+
+
+Sempre com discursosa afiados e ativista pelos direitos das minorias, Viola é uma das atrizes mais queridas pelo publico pop, e será com base em termos usados por este público que iremos analisar a relação entre *critica* e *bilheteria* de seus filmes, com dados retirados do *Rotten Tomatoes*.
+Os filmes foram separados em 4 grupos: *Flop*, *Farofas*, *Sem intenção de charts* e *Hinos*
+
+```{r warning = FALSE, message = FALSE, error = FALSE}
+
+filmes <- filmes %>%
+    filter(!(filme %in% dublagens)) %>%
+    mutate(avaliacao_scaled = as.vector(scale(avaliacao)),
+           bilheteria_log_scaled = as.vector(scale(log10(bilheteria))))
+    
+set.seed(50)
+n_clusters = 3
+
+agrupados <- filmes %>% 
+    select(bilheteria_log_scaled, avaliacao_scaled) %>% 
+    kmeans(centers = n_clusters, nstart = 20)  %>% 
+    augment(filmes)
+
+agrupados <- grouped_by_km %>%
+    mutate(grupo = case_when(
+        .cluster == 1 ~ "Flop",
+        .cluster == 2 ~ "Farofas",
+        .cluster == 3 ~ "Sem intenção de charts",
+        .cluster ==  4 ~ "Hinos",
+        TRUE ~ "Outros")
+    )
+
+filmes_plot <- agrupados %>%
+    ggplot(aes(x = bilheteria, y = avaliacao, fill = grupo))  +
+    stat_chull(aes(fill = grupo, text = paste("<b>Grupo:</b>", grupo)), alpha = 0.2, geom = 'polygon') +
+    geom_point(aes(text = paste("<b>Filme:</b>", filme,
+                                "<br><b>Bilheteria:</b> US$", round(bilheteria, 1),
+                                "mi<br><b>Avaliação (RT):</b>", avaliacao,  ... = "<br><b>Ano:</b>", ano)),
+                                size = 5, shape = 16, color = 'black') +
+    labs(title = "Viola Davis: de Flops para Hinos",
+         x = "Bilheteria (em milhões de dólares)",
+         y = "Avaliação (Rotten Tomatoes)") +
+    scale_x_log10() +
+    theme(legend.position = 'none', plot.title = element_text(hjust = 0.5))
+
+ggplotly(filmes_plot, tooltip = c('text'))
+```
+
+
+
+## Analisando grupos
+
+### Flop

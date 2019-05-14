@@ -12,7 +12,7 @@ output:
     df_print: paged
 ---
 
-**Viola Davis Tennon** é uma atriz e produtora norte-americana que tem sua carreira consagrada nos cinemas e na TV. A veterana começou sua carreira como atriz em peças de teatro e papeis coadjuvantes no cinema, tendo seus primeiros destaques em *Kate & Leopold*, em 2001, e *Far from Heaven*, no ano seguinte. Apesar de já começar a traçar sua icônica trajetoria nos cinemas, seu maior sucesso veio em 2008, no drama *Doubt*, que lhe rendeu diversas indicações, incluindo *Oscar*, *Globo de Ouro* e *SAG Award*, todos na categoria de Melhor Atriz Coadjuvante. Como Atriz Principal pelo filme *The Help*, em 2011, ela repetiu o feito, sendo indicada nas maiores premiações do cinema e ganhando um *SAG Award*.
+**Viola Davis Tennon** é uma atriz e produtora norte-americana que tem sua carreira consagrada nos cinemas e na TV. A veterana começou sua carreira como atriz em peças de teatro e papeis coadjuvantes no cinema, tendo seus primeiros destaques em **Kate & Leopold**, em 2001, e **Far from Heaven**, no ano seguinte. Apesar de já começar a traçar sua icônica trajetoria nos cinemas, seu maior sucesso veio em 2008, no drama **Doubt**, que lhe rendeu diversas indicações, incluindo **Oscar**, **Globo de Ouro** e **SAG Award**, todos na categoria de Melhor Atriz Coadjuvante. Como Atriz Principal pelo filme **The Help**, em 2011, ela repetiu o feito, sendo indicada nas maiores premiações do cinema e ganhando um **SAG Award**.
 
 ```{r warning = FALSE, message = FALSE, error = FALSE}
 library(tidyverse)
@@ -29,28 +29,27 @@ filmes = read_imported_data()
 ```
 
 
-Sempre com discursosa afiados e ativista pelos direitos das minorias, Viola é uma das atrizes mais queridas pelo publico pop, e será com base em termos usados por este público que iremos analisar a relação entre *critica* e *bilheteria* de seus filmes, com dados retirados do *Rotten Tomatoes*.
+Sempre com discursos afiados e ativista pelos direitos das minorias, Viola é uma das atrizes mais queridas pelo **publico pop**. E será com base em termos usados por este público, principalmente por meio de gifs no twitter, que iremos analisar a relação entre *critica* e *bilheteria* de seus filmes, com dados retirados do **Rotten Tomatoes**.
 Os filmes foram separados em 4 grupos: *Flop*, *Farofas*, *Sem intenção de charts* e *Hinos*
 
 ```{r warning = FALSE, message = FALSE, error = FALSE}
 
 filmes <- filmes %>%
-    filter(!(filme %in% dublagens)) %>%
     mutate(avaliacao_scaled = as.vector(scale(avaliacao)),
            bilheteria_log_scaled = as.vector(scale(log10(bilheteria))))
     
 set.seed(50)
-n_clusters = 3
+n_clusters = 4
 
 agrupados <- filmes %>% 
     select(bilheteria_log_scaled, avaliacao_scaled) %>% 
     kmeans(centers = n_clusters, nstart = 20)  %>% 
     augment(filmes)
 
-agrupados <- grouped_by_km %>%
+agrupados <- agrupados %>%
     mutate(grupo = case_when(
-        .cluster == 1 ~ "Flop",
-        .cluster == 2 ~ "Farofas",
+        .cluster == 1 ~ "Farofas",
+        .cluster == 2 ~ "Flop",
         .cluster == 3 ~ "Sem intenção de charts",
         .cluster ==  4 ~ "Hinos",
         TRUE ~ "Outros")
@@ -72,8 +71,64 @@ filmes_plot <- agrupados %>%
 ggplotly(filmes_plot, tooltip = c('text'))
 ```
 
-
-
 ## Analisando grupos
 
+Serão analisados alguns destaques individualmente.
+
 ### Flop
+
+- **Filmes:** *Won't Back Down* (2012), *It's Kind of a Funny Story* (2010), *Blackhat* (2013) e *Beautiful Creatures* (2013).
+
+Flop é o termo usado para definir fracasso em diversos âmbitos. Aqui estão os filmes que tiveram baixo desempenho em avaliação e bilheteria (*charts*).
+
+
+<img src="https://lh6.ggpht.com/-4vssIY-BtOU/UeBYH_jun1I/AAAAAAAAC4Y/rtwm5YmnOaM/s189/gagaflop.gif" width="200" height="200"  /> 
+
+Nem só de sucesso se vive na carreira, e felizmente a lista de *flops* de Viola Davis não é extensa. 
+Apesar de não ser a principal do filme, **Blackhat**, segundo criticas da época, fracassou porque foi prejudicado por uma campanha de marketing que falhou para transmitir um enredo sofisticado e um romance. **Won't Back Down**, pelo contrario, tinha Davis como uma das protagonistas interpretando uma mãe solteira que inspira outros pais e, infelizmente, foi considerado um dos maiores fracassos de de seu ano de lançamento. 
+Apesar dos baixos desempenhos, é notório que na maioria dos filmes, seu papel é restrito e sem muito destaque.
+
+### Farofas
+
+- **Filmes:** *Extremely Loud & Incredibly Close* (2012), *Get Rich or Die Tryin'* (2005), *Nights in Rodanthe* (2008), *Kate & Leopold* (2001), *Law Abiding Citizen* (2009), *Eat Pray Love* (2010), *Knight & Day* (2010), *Madea Goes to Jail* (2009) e *Suicide Squad* (2016).
+
+Basta prestar atenção a uma rodinha sobre música pop, que a vai sair a pergunta: “cadê a farofa?”. Para quem não sabe, “farofa” na música, são normalmente músicas que tem grande influência popular e um maior apelo comercial, não tendo um bom desempenho em criticas pois este não é seu foco.
+Neste contexto, neste grupo estão os filmes que tiveram grande bilheteria porém criticas bem baixas.
+
+<img src="https://media.giphy.com/media/WZWZjxNKjjG36/giphy.gif" width="200" height="200"/> 
+
+Com a mais alta arrecadação, iniciamos com **Suicide Squad**. Existia um grande hype pelo filme, onde Viola interpretou Amanda Waller, e quando foi lançado as criticas negativas foram grandes em relação ao desenvolvimento do filme. Porém isso não impediu do filme ter uma boa arrecadação e garantir seu destaque nesta avaliação e no historico da atriz. 
+Após o sucesso de critica em **Doubt**, viola veio com uma farofa em 2009 para equilibrar, **Law Abiding Citizen** teve recepção desfavorável por parte da crítica especializada (por isto esta aqui), porém por ser um daqueles filmes de ação que predem, teve uma boa arrecadação e ficou em segundo lugar nas bilheterias em sua primeira e segunda semana consecutiva.
+
+
+### Sem intenção de charts
+
+- **Filmes:** *Far From Heaven* (2003), *Solaris* (2002), *Antwone Fisher* (2002), *Get On Up* (2014), *State of Play* (2009) e *Doubt* (2008).
+
+Sabe quando  o lançamento é de boa qualidade mas não tem bom retorno financeiro? Então, *'foi sem intenção de charts'*, dizem os fãs. Aqui estão os lançamentos que tiveram boas avaliações criticas, porém baixa bilheteria. 
+
+<img src="https://66.media.tumblr.com/4999357fbde966bc4f6dca70754e26ba/tumblr_inline_orveemAXLA1uz0spx_250.gif" width="200" height="200"  /> 
+
+Aqui que chegamos na primeira grande aclamação de Viola Davis em premiações do cinema, em **Doubt**. O filme, que teve a interprete como Sra. Miller e mais de 20 prêmios, não teve arrecadação muito significativa, porém algo que se torna um detalhe perto das avaliações e criticas positivas que recebeu.
+Bem no começo de sua trajetoria no cinema, Viola esteve no filme **Far From Heaven**, interpretando Sybil. O indicado à 4 Oscars, o filme aborda temas como homossexualidade e racismo de modo que mereceu e teve o destaque merecido.
+
+
+### Hinos
+
+- **Filmes:** *Syriana* (2005), *Fences'* (2016), *Ender's Game* (2013), *Prisioners* (2013), *World Trade Center* (2006), *Disturbia* (2007), *Traffic* (2000), *The Help* (2011).
+
+Qualidade e sucesso, é o que todos querem!
+Aqui estão agrupados os filmes que tiveram bons desempenhos em critica e em bilheteria, sendo responsáveis por grande parte do sucesso de público e de prêmios que Viola Davis detém. 
+
+<img src="https://portalfreakout.com.br/site/wp-content/uploads/2018/06/que-hino.gif" width="200" height="200"  /> 
+
+Dando destaque para **The Help**, o longa, que tem Davis como protagonista, se passa nos anos 60 e mostra como o racismo era estruturado na sociedade americana enquanto. Sua personagem, Aibileen, tem um desenvolvimento incrivel no filme e Viola, como sempre, apresenta uma atuação digna. 
+Rendendo um Oscar de *Melhor Atriz Coadjuvante* para a atriz, **Fences** teve ótima estreia em bilheteria e criticas, abordando o racismo de maneira super inteligente e se torncando sendo um de seus filmes mais memoráveis  na temporada de premiação.
+
+
+
+
+
+
+
+

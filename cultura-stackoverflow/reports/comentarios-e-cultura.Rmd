@@ -53,7 +53,6 @@ Considerando essa variável, queremos examinar a relação entre ela e o quão h
 
 Faça uma visualização que usa os princípios de eficácia no projeto de visualizações para facilitar as comparações que você acha que são as mais importantes para entendermos esse contexto. 
 
-
 Foram utilizados pontos para representar a relação entre a quantidade de respostas proporcionalmente, e o PDI (que representa o quão hierarquica é uma sociedade) em cada país. Com isso, da para ver mais facilmente como se encontra a relação das variaveis e quais são os paises que mais se destacam da tendencia. Cada ponto do país tem um tamanho e cor diferente para mostrar a quantidade de usuarios e o quanto internet é usada, proporcionalmente. 
 
 ```{r}

@@ -1,0 +1,87 @@
+---
+title: "REPLACE ME"
+output:
+    html_document:
+    df_print: paged
+theme: sandstone
+---
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+library(tidyverse)
+options(scipen = 999)
+source(here::here("code/lib.R"))
+theme_set(theme_bw())
+```
+
+```{r read}
+atividade = read_projectdata()
+atividade = atividade %>% filter(!is.na(twitter))
+atividade = atividade %>% 
+  mutate(seguidores_log = log10(seguidores), 
+         n_proprio_log = log10(n_proprio), 
+         n_retweet_log = log10(n_retweet))
+```
+##1. Qual a relação entre as características da atuação do parlamentar e o engajamento total que ele obtém no twitter? 
+
+###Analisando relação entre variaveis
+*Seguidores*
+
+```{r warning=FALSE}
+atividade %>%
+  ggplot(aes(y = log10(engaj_total), x = seguidores_log))+
+  geom_point()
+```
+
+*Twittes*
+
+```{r warning=FALSE}
+atividade %>%
+  ggplot(aes(y = log10(engaj_total), x = n_proprio_log))+
+  geom_point()
+```
+
+*Retweet*
+
+```{r warning=FALSE}
+atividade %>%
+  filter(n_retweet > 0)%>%
+  ggplot(aes(y = log10(engaj_total), x = n_retweet_log))+
+  geom_point()
+```
+
+*Retweet*
+
+```{r warning=FALSE}
+atividade %>%
+  ggplot(aes(y = engaj_total, x = ""))+
+  geom_point()
+```
+
+###Estimando o modelo de regressão linear múltipla.
+
+O modelo considera que o cargo do parlamentar, a quantidade de seguidores e se _seguindo_, número de twittes próprios (n_proprio) e de retweets (n_retweet) têm influência no engajamento total.
+
+```{r}
+lm1 <- lm(engaj_total ~ casa + segue + seguidores + n_proprio + n_retweet , data = atividade)
+
+summary(lm1)
+```
+
+Para um nível de significância de 5% (\( \beta_{1} \)), *existem indícios para rejeitar a hipótese de parâmetro nulo *para as variáveis seguidores, n_proprio e n_retweet, 
+As restantes variáveis não parecem ter efeito sobre o o engajamento total.
+
+
+Interpretação: Um aumento de 1 retweet conduz a um aumento de 1208 unidades no engajamento total, assim como um twitte próprio e um seguidor aumenta em 484 e 0.43, respectivamente, no engajamento total. 
+
+
+```{r}
+lm1 <- lm(engaj_mediano ~ casa + segue + seguidores + n_proprio + n_retweet , data = atividade)
+
+summary(lm1)
+```
+
+
+
+
+
+

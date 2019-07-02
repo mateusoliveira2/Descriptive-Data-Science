@@ -4,16 +4,12 @@ author: "Mateus de Lima Oliveira"
 date: "30 de abril de 2019"
 output:
   html_document:
-    theme: flatly
-    self_contained: no
+    code_folding: "hide"
     toc: yes
     toc_depth: 5
     toc_float:
       collapsed: no
-  pdf_document:
-    toc: yes
-    toc_depth: '5'
-css: r-markdown.css
+    df_print: paged
 ---
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}

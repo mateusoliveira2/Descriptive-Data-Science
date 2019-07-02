@@ -4,16 +4,12 @@ author: "Mateus de Lima Oliveira"
 date: "20 de abril de 2019"
 output:
   html_document:
-    theme: flatly
-    self_contained: no
-    toc: yes
-    toc_depth: 5
-    toc_float:
-      collapsed: no
-  pdf_document:
-    toc: yes
-    toc_depth: '5'
-css: r-markdown.css
+      code_folding: "hide"
+      toc: yes
+      toc_depth: 5
+      toc_float:
+        collapsed: no
+      df_print: paged
 ---
 
 Como visto em analises anteriores, a utilização do Twitter por parte dos parlamentares segue algumas caracteristicas de acordo com certas diretrizes. Como por exemplo, quais são os partidos mais ativos, ou qual casa que tem maioria dos parlamentares na rede social. 

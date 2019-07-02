@@ -1,0 +1,157 @@
+---
+title: "Quais gastos interferem no lucro de uma startup ?"
+author: "Mateus de Lima Oliveira"
+date: "05 de julho de 2019"
+output:
+  html_document:
+    code_folding: "hide"
+    toc: yes
+    toc_depth: 5
+    toc_float:
+      collapsed: no
+    df_print: paged
+---
+
+```{r results='hide', message=FALSE, warning=FALSE}
+library(tidyverse)
+library(ggbeeswarm)
+library(ggplot2)
+library(corrplot)
+
+knitr::opts_chunk$set(tidy = FALSE, fig.width = 8, fig.height = 6, echo = TRUE)
+
+options(scipen = 999)
+
+dataset = read_csv(here::here("data/50_startups.csv"),
+                 col_types = "dddcd")
+
+names(dataset)[names(dataset) == 'ReD'] <- 'PeD'
+names(dataset)[names(dataset) == 'Administration'] <- 'Administracao'
+names(dataset)[names(dataset) == 'State'] <- 'Estado'
+names(dataset)[names(dataset) == 'Profit'] <- 'Lucro'
+```
+
+
+## Motivação
+
+Os dados utilizados possuem informações sobre 50 startups. Temos cinco colunas que contêm informações sobre quanto essas empresas gastam em administração, pesquisa e desenvolvimento (P&D) e marketing, sua localização por estado e seu lucro no ano mais recente. Este conjunto de dados é anonimizado, o que significa que não sabemos os nomes dessas startups ou qualquer outra informação de identificação.
+
+Pensamos no cenário em que seríamos contratados para analisar essas informações e criar um modelo. Precisaríamos responder ao contratante em quais departamentos da empresa devem-se investir para se obter um maior lucro, por exemplo em administração, ou em outro setor. O nosso empregador informou que deseja tomar essa decisão com base no lucro do ano passado.
+
+Para resolver esse problema, criaremos um modelo para avaliar quais departamentos de uma startup são interessantes para se investir, a fim maximizar seu lucro.
+
+## Análise Descritiva
+
+### Administração
+
+Com base nas visualizações abaixo, podemos notar que há uma dispersão dos pontos, de modo que não se pode afirmar que há uma correlação considerável entre os gastos com administração e o lucro da startup. Nos três estados, existem pontos que estão no mesmo nível de lucro mesmo com o crescimento dos gastos em administração.
+
+```{r}
+ggplot(data = dataset) +
+    theme(legend.position="none")+
+    geom_point(aes(x = Administracao, y = Lucro)) +
+    facet_grid(Estado ~ .) +
+    labs(x = "Administração", y = "Lucro", title = "Administração X Lucro", subtitle =  "Analise de relação entre gasto com administração e o lucro por estado")
+```
+
+```{r}
+ggplot(data = dataset) +
+    theme(legend.position="none")+
+    geom_point(aes(x = Administracao, y = Lucro, color = Estado))+
+    labs(x = "Administração", y = "Lucro", title = "Administração X Lucro", subtitle =  "Analise de relação entre gasto com administração e o lucro")
+```
+
+### Marketing
+
+No marketing, a situação difere da administração. As startups tendem a ter um maior lucro de acordo com o investimento nesse setor nos três estados, pois ao passo que o valor investido cresce, os lucros também crescem.
+Observa-se pontos que fogem da têndencia, logo, há uma correlação considerável entre essas duas variáveis.
+
+```{r}
+ggplot(data = dataset) +
+    theme(legend.position="none")+
+    geom_point(aes(x = Marketing, y = Lucro))+
+    facet_grid(Estado ~ .) +
+    labs(x = "Marketing", y = "Lucro", title = "Marketing X Lucro", subtitle =  "Analise de relação entre gasto com marketing e lucro por estado")
+```
+
+```{r}
+ggplot(data = dataset) +
+    theme(legend.position="none")+
+    geom_point(aes(x = Marketing, y = Lucro, color= Estado))+
+    labs(x = "Marketing", y = "Lucro", title = "Marketing X Lucro", subtitle =  "Analise de relação entre gasto com marketing e o lucro")
+```
+
+### Pesquisa e Desenvolvimento
+
+Como esperado, há uma correlação quase linear em relação ao lucro e o investimento em pesquisa e desenvolvimento. Não há pontos consideráveis que saiam da têndencia de crescimento linear que os pontos do gráfico seguem. 
+Com isso, esse é o setor que gera um efeito positivo mais provável no lucro das startups quando comparado com Marketing e Administração.
+
+```{r}
+ggplot(data = dataset) +
+    theme(legend.position="none")+
+    geom_point(aes(x = PeD, y = Lucro)) +
+    facet_grid(Estado ~ .) +
+    labs(x = "P&D", y = "Lucro", title = "P&D X Lucro", subtitle =  "Análise de relação entre gasto com pesquisa & desenvolvimento e lucro por estado")
+```
+
+```{r}
+ggplot(data = dataset) +
+    theme(legend.position="none")+
+    geom_point(aes(x = PeD, y = Lucro, color = Estado)) +
+    labs(x = "P&D", y = "Lucro", title = "P&D X Lucro", subtitle =  "Análise de relação entre gasto com pesquisa & desenvolvimento e lucro")
+```
+
+### Correlações
+Para avaliar as correlações entre as variaveis, analisaremos o heatmap abaixo:
+
+```{r}
+numerical_columns = dataset[c("PeD", "Lucro", "Administracao", "Marketing")]
+corrplot(cor(numerical_columns), method="color",  
+         order="hclust", 
+         addCoef.col = "black", 
+         tl.col="black", tl.srt=45, 
+         sig.level = 0.01, insig = "blank"
+         )
+```
+
+Como ja tinhamos visto nas visualizações anteriores, Pesquisa e Desenvolvimento e Lucro tem a maior correlação entre as variaveis, de **0.97**.
+
+### Comparação dos lucros por estados
+
+```{r}
+ggplot(data = dataset) +
+    geom_quasirandom(aes(x = Estado, y = Lucro, color = Estado, alpha = 0.3))+
+    geom_boxplot(aes(x = Estado, y = Lucro, color = Estado, alpha = 0.3))+
+    labs(x = "", y = "Lucro", title = "Lucros por estados")
+```
+
+```{r warning=FALSE}
+ggplot(data = dataset) +
+    geom_quasirandom(aes(x = "" , y = Lucro, alpha = 0.3))+
+    geom_boxplot(aes(x = "", y = Lucro, alpha = 0.3))+
+    labs(x = "", y = "Lucro", title = "Lucros por estados")
+```
+
+
+
+## Pré-processamento dos dados
+
+### Adequação das variáveis
+
+Antes de analisar os modelos que se adequam à problemática proposta, é necessário adaptar as variáveis que não são do tipo númerico, pois sem isto, elas não podem ser consideradas como parâmetros dos modelos de uma regressão linear.
+
+A variável adaptada é a Estado, que pode assumir três valores categóricos: 'New York', 'California' e 'Florida'. Desse modo, ela foi transformada para receber respectivamente os valores 1, 2 e 3, possibilitando sua inclusão na construção do modelos.
+
+```{r}
+dataset$Estado = factor(dataset$Estado,
+                       levels = c('New York', 'California', 'Florida'),
+                       labels = c(1, 2, 3))
+
+dataset$Estado <- as.numeric(levels(dataset$Estado)[dataset$Estado])
+```
+
+```{r}
+lm_lucro <- lm(Lucro ~ PeD + Marketing + Administracao + Estado, data = dataset)
+
+```
+

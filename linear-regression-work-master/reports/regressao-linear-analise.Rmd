@@ -17,6 +17,7 @@ library(tidyverse)
 library(ggbeeswarm)
 library(ggplot2)
 library(corrplot)
+library(broom)
 
 knitr::opts_chunk$set(tidy = FALSE, fig.width = 8, fig.height = 6, echo = TRUE)
 
@@ -143,15 +144,34 @@ Antes de analisar os modelos que se adequam à problemática proposta, é necess
 A variável adaptada é a Estado, que pode assumir três valores categóricos: 'New York', 'California' e 'Florida'. Desse modo, ela foi transformada para receber respectivamente os valores 1, 2 e 3, possibilitando sua inclusão na construção do modelos.
 
 ```{r}
-dataset$Estado = factor(dataset$Estado,
-                       levels = c('New York', 'California', 'Florida'),
-                       labels = c(1, 2, 3))
+#dataset$Estado = factor(dataset$Estado,
+#                       levels = c('New York', 'California', 'Florida'),
+#                       labels = c(1, 2, 3))
 
-dataset$Estado <- as.numeric(levels(dataset$Estado)[dataset$Estado])
+#dataset$Estado <- as.numeric(levels(dataset$Estado)[dataset$Estado])
 ```
+
+## Modelo
+
+Iremos montar o  modelo considerando todas as variaveis que porem impactar no lucro. 
 
 ```{r}
-lm_lucro <- lm(Lucro ~ PeD + Marketing + Administracao + Estado, data = dataset)
+lm_lucro <- lm(Lucro ~ PeD + Marketing + Administracao, data = dataset)
+tidy(lm_lucro)
+glance(lm_lucro)
 
 ```
+
+##Ou seja..
+
+Considere **MKT** sendo Marketing e **ADM** sendo Administração.
+
+Os resultados da regressão indicam o modelo no formato:
+**Lucro = *(0.8)*.PeD + *(0.03)*.MKT + *(-0.02)*.ADM**, que explicaria **95%** da variância da variável de resposta (R² = 0.946374). 
+
+O aumento de 1 unidade na *pesquisa e desenvolvimento* produz uma mudança de *0.80* no Lucro final da startup. Portanto, é a variável de maior influência no valor final do Lucro. Em contrapartida, Administração e Marketing tem um pequeno impacto, de *-0.26* e *0.27*, respectivamente.
+
+
+
+
 

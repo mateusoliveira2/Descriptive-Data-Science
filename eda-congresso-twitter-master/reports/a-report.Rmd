@@ -1,5 +1,5 @@
 ---
-title: "REPLACE ME"
+title: "Análise de atividade de parlamentares no twitter"
 author: "Mateus de Lima Oliveira"
 date: "28 de junho de 2019"
 output:
@@ -39,12 +39,15 @@ atividade = atividade %>%
 
 ###Analisando relação entre variaveis
 
+Inicialmente iremos analisar como se dá a dispersão dos parlamentares em relação as variáveis de caracteristica (quantidade de seguidores, seguindo, retweets e twittes) para analisar possíveis correlações.
+
 **Seguidores**
 
 ```{r warning=FALSE}
 atividade %>%
   ggplot(aes(y = engaj_total_log, x = seguidores_log))+
-  geom_point()
+  geom_point()+
+  labs(x = "Seguidores", y = "Engajamento total", title = "Seguidores X Engajamento total")
 ```
 
 **Twittes**
@@ -52,7 +55,8 @@ atividade %>%
 ```{r warning=FALSE}
 atividade %>%
   ggplot(aes(y = engaj_total_log, x = n_proprio_log))+
-  geom_point()
+  geom_point()+
+  labs(x = "nº de twittes", y = "Engajamento total", title = "Twittes X Engajamento total")
 ```
 
 **Retweet**
@@ -61,7 +65,8 @@ atividade %>%
 atividade %>%
   filter(n_retweet > 0)%>%
   ggplot(aes(y = engaj_total_log, x = n_retweet_log))+
-  geom_point()
+  geom_point()+
+  labs(x = "nº de retweets", y = "Engajamento total", title = "Retweets X Engajamento total")
 ```
 
 **Segue**
@@ -70,13 +75,13 @@ atividade %>%
 atividade %>%
   filter(n_retweet > 0)%>%
   ggplot(aes(y = segue_log, x = n_retweet_log))+
-  geom_point()
+  geom_point()+
+  labs(x = "Seguindo", y = "Engajamento total", title = "Seguindo X Engajamento total")
 ```
 
 
 ###Estimando o modelo de regressão linear múltipla.
 
-O modelo considera que o cargo do parlamentar, a quantidade de seguidores e se _seguindo_, número de twittes próprios (n_proprio) e de retweets (n_retweet) têm influência no engajamento total.
 
 ```{r}
 
@@ -85,20 +90,19 @@ lm_engaj_total <- lm(engaj_total_log ~ casa + segue_log + seguidores_log + n_pro
 tidy(lm_engaj_total)
 glance(lm_engaj_total)
 ```
-Considere **ET** = engajamento total, **CS** = casa do parlamentar, **RT** = número de retweets, **TP** = número de twittes próprios, **SG** = número de contas seguidas e **SGS** = número de seguidores. Além disso, o modelo foi gerado usando os dados com seu valor em log na base 10. Caso necessário, fazer a conversão para os valores originais. 
+Considere **ET** = engajamento total, **CS** = casa do parlamentar, **RT** = número de retweets, **TP** = número de twittes próprios, **SG** = número de contas seguidas e **SGS** = número de seguidores. Além disso, o modelo foi gerado usando os dados com seu valor em log na base 10. Caso necessário, fazer a conversão para os valores originais.
 
-Os resultados da regressão indicam que um modelo no formato:  ET = **0.87**.RT + **0.5**.TP + **0.5**.SG + **0.56**.SGS **0.05**.CS   explicam **70,87%** da variância da variável de resposta (R² = 0.7087). 
+###Ou seja..
 
+Os resultados da regressão indicam que o modelo no formato:  
+**ET = *0.87*.RT + *0.5*.TP + *0.5*.SG + *0.56*.SGS *0.05*.CS** , que explica **70,87%** da variância da variável de resposta (R² = 0.7087). 
 
-*fazer a conversao*
-
-O aumento de 1 unidade de RT *medida como/em [unidade]* produz uma mudança de *XXX* no engajamento. Portanto, é a variável de maior influência no valor final de ET, logo, um parlamentar que 
-
-As restantes variáveis não parecem ter efeito sobre o o engajamento total.
-
+O aumento de 1 unidade de RT (retweet) produz uma mudança de *0.86* no engajamento total, sendo a variável de maior influência no valor final de **ET**. Em contrapartida, a casa do parlamentar tem um menor impacto em seu engajamento, de *0.07*.
+A mesma lógica se aplica às demais variaveis.
 
 
-###2. Qual a relação entre as características da atuação do parlamentar e o *engajamento mediano* que ele obtém no twitter? 
+
+##2. Qual a relação entre as características da atuação do parlamentar e o *engajamento mediano* que ele obtém no twitter? 
 
 ###Analisando relação entre variaveis
 
@@ -107,7 +111,8 @@ As restantes variáveis não parecem ter efeito sobre o o engajamento total.
 ```{r warning=FALSE}
 atividade %>%
   ggplot(aes(y = engaj_mediano_log, x = seguidores_log))+
-  geom_point()
+  geom_point()+
+  labs(x = "Seguidores", y = "Engajamento total", title = "Seguidores X Engajamento total")
 ```
 
 **Twittes**
@@ -115,7 +120,8 @@ atividade %>%
 ```{r warning=FALSE}
 atividade %>%
   ggplot(aes(y = engaj_mediano_log, x = n_proprio_log))+
-  geom_point()
+  geom_point()+
+  labs(x = "nº de twittes", y = "Engajamento total", title = "Twittes X Engajamento total")
 ```
 
 **Retweet**
@@ -124,7 +130,8 @@ atividade %>%
 atividade %>%
   filter(n_retweet > 0)%>%
   ggplot(aes(y = engaj_mediano_log, x = n_retweet_log))+
-  geom_point()
+  geom_point()+
+  labs(x = "nº de retweets", y = "Engajamento total", title = "Retweets X Engajamento total")
 ```
 
 **Segue**
@@ -133,7 +140,8 @@ atividade %>%
 atividade %>%
   filter(n_retweet > 0)%>%
   ggplot(aes(y = engaj_mediano_log, x = segue_log))+
-  geom_point()
+  geom_point()+
+  labs(x = "seguindo", y = "Engajamento total", title = "Seguindo X Engajamento total")
 ```
 
 ###Estimando o modelo de regressão linear múltipla.
@@ -146,17 +154,16 @@ lm_engaj_mediano <- lm(engaj_mediano_log ~ casa + segue_log + seguidores_log + n
 tidy(lm_engaj_mediano)
 glance(lm_engaj_mediano)
 ```
-Considere **EM** = engajamento mediano, **CS** = casa do parlamentar, **RT** = número de retweets, **TP** = número de twittes próprios, **SG** = número de contas seguidas e **SGS** = número de seguidores. Além disso, o modelo foi gerado usando os dados com seu valor em log na base 10. Caso necessário, fazer a conversão para os valores originais. 
 
-Os resultados da regressão indicam que um modelo no formato   EM = **(0.28)**.RT + **(-0.14)**.TP + **(-0.3)**.SG + **0.74**.SGS **(-0.10)**.CS   explicam **56,5%** da variância da variável de resposta (R² = 0.5653). 
+Considere **EM** = engajamento mediano, **CS** = casa do parlamentar, **RT** = número de retweets, **TP** = número de twittes próprios, **SG** = número de contas seguidas e **SGS** = número de seguidores. Além disso, assim como o primeiro, o modelo foi gerado usando os dados com seu valor em log na base 10. Caso necessário, fazer a conversão para os valores originais. 
 
+##Ou seja..
 
-Entretanto, assim como na primeira parte, o modelo foi gerado usando os dados com seu valor em log na base 10. Para calcular o modelo, é necessário fazer a conversão para os valores originais. 
-*fazer a conversao*
+Os resultados da regressão indicam o modelo no formato:
+**EM = *(0.28)*.RT + *(-0.14)*.TP + *(-0.3)*.SG + *0.74*.SGS *(-0.10)*.CS**, que explicaria **56,5%** da variância da variável de resposta (R² = 0.5653). 
 
-O aumento de 1 unidade de RT *medida como/em [unidade]* produz uma mudança de *XXX* no engajamento. Portanto, é a variável de maior influência no valor final de ET, logo, um parlamentar que 
-
-As restantes variáveis não parecem ter efeito sobre o o engajamento total.
+O aumento de 1 unidade de SGS (seguidores) produz uma mudança de *0.74* no engajamento mediano. Portanto, é a variável de maior influência no valor final de **EM**. Em contrapartida, assim como na primeira analise, a casa do parlamentar tem um menor impacto em seu engajamento, de *-0,10*.
+A mesma lógica se aplica às demais variaveis. 
 
 
 

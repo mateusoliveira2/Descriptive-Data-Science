@@ -151,7 +151,7 @@ glance(lm_lucro)
 Considere **MKT** sendo Marketing e **ADM** sendo Administração.
 
 Os resultados da regressão indicam o modelo no formato:
-**Lucro = 50125.34 *(0.8)*.PeD + *(0.03)*.MKT + *(-0.02)*.ADM + *(198.8)*.EstadoFlorida + (-41.9).EstadoNewYork** , que explicaria **95%** da variância da variável de resposta (R² = 0.946374). 
+**Lucro = 50125.34 (0.8).*PeD* + (0.03).*MKT* + (-0.02).*ADM* + (198.8).*EstadoFlorida* + (-41.9).*EstadoNewYork* ** , que explicaria **95%** da variância da variável de resposta (R² = 0.946374). 
 
 O aumento de 1 unidade na *pesquisa e desenvolvimento* produz uma mudança de *0.80* no Lucro final da startup. Portanto, é a variável de maior influência no valor final do Lucro. Em contrapartida, Administração e Marketing tem um pequeno impacto, de *-0.26* e *0.27*, respectivamente.
 

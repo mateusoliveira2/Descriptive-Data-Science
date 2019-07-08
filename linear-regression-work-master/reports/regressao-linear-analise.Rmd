@@ -57,7 +57,6 @@ ggplot(data = dataset) +
 
 ```{r}
 ggplot(data = dataset) +
-    theme(legend.position="none")+
     geom_point(aes(x = Administracao, y = Lucro, color = Estado))+
     labs(x = "Administração", y = "Lucro", title = "Administração X Lucro", subtitle =  "Analise de relação entre gasto com administração e o lucro")
 ```
@@ -77,7 +76,6 @@ ggplot(data = dataset) +
 
 ```{r}
 ggplot(data = dataset) +
-    theme(legend.position="none")+
     geom_point(aes(x = Marketing, y = Lucro, color= Estado))+
     labs(x = "Marketing", y = "Lucro", title = "Marketing X Lucro", subtitle =  "Analise de relação entre gasto com marketing e o lucro")
 ```
@@ -97,7 +95,6 @@ ggplot(data = dataset) +
 
 ```{r}
 ggplot(data = dataset) +
-    theme(legend.position="none")+
     geom_point(aes(x = PeD, y = Lucro, color = Estado)) +
     labs(x = "P&D", y = "Lucro", title = "P&D X Lucro", subtitle =  "Análise de relação entre gasto com pesquisa & desenvolvimento e lucro")
 ```
@@ -140,7 +137,7 @@ ggplot(data = dataset) +
 Iremos montar o  modelo considerando todas as variaveis que porem impactar no lucro. 
 
 ```{r}
-lm_lucro <- lm(Lucro ~ PeD + Marketing + Administracao+ Estado, data = dataset)
+lm_lucro <- lm(Lucro ~ PeD + Marketing + Administracao + Estado, data = dataset)
 tidy(lm_lucro)
 glance(lm_lucro)
 
@@ -151,7 +148,7 @@ glance(lm_lucro)
 Considere **MKT** sendo Marketing e **ADM** sendo Administração.
 
 Os resultados da regressão indicam o modelo no formato:
-**Lucro = 50125.34 (0.8).*PeD* + (0.03).*MKT* + (-0.02).*ADM* + (198.8).*EstadoFlorida* + (-41.9).*EstadoNewYork* ** , que explicaria **95%** da variância da variável de resposta (R² = 0.946374). 
+**Lucro = 50125.34 + (0.8).*PeD* + (0.03).*MKT* + (-0.02).*ADM* + (198.8).*EstadoFlorida* + (-41.9).*EstadoNewYork* ** , que explicaria **95%** da variância da variável de resposta (R² = 0.946374). 
 
 O aumento de 1 unidade na *pesquisa e desenvolvimento* produz uma mudança de *0.80* no Lucro final da startup. Portanto, é a variável de maior influência no valor final do Lucro. Em contrapartida, Administração e Marketing tem um pequeno impacto, de *-0.26* e *0.27*, respectivamente.
 
